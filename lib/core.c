@@ -372,20 +372,31 @@ gpiod_chip_get_line(struct gpiod_chip *chip, unsigned int offset)
 
 	if (offset >= chip->num_lines) {
 		errno = EINVAL;
+		printf("\n----libgpiod : %d : %s : %s",
+			__LINE__, __func__, __FILE__);
+		printf("\noffset >= chip->num_lines\n");
 		return NULL;
 	}
 
 	if (!chip->lines) {
 		chip->lines = calloc(chip->num_lines,
 				     sizeof(struct gpiod_line *));
-		if (!chip->lines)
+		if (!chip->lines) {
+			printf("\n----libgpiod : %d : %s : %s",
+				__LINE__, __func__, __FILE__);
+			printf("\n!chip->lines\n");
 			return NULL;
+		}
 	}
 
 	if (!chip->lines[offset]) {
 		line = malloc(sizeof(*line));
-		if (!line)
+		if (!line){
+			printf("\n----libgpiod : %d : %s : %s",
+				__LINE__, __func__, __FILE__);
+			printf("\n!line\n");
 			return NULL;
+		}
 
 		memset(line, 0, sizeof(*line));
 
@@ -398,8 +409,12 @@ gpiod_chip_get_line(struct gpiod_chip *chip, unsigned int offset)
 	}
 
 	rv = gpiod_line_update(line);
-	if (rv < 0)
+	if (rv < 0) {
+		printf("\n----libgpiod : %d : %s : %s",
+			__LINE__, __func__, __FILE__);
+		printf("\nrv<0\n");
 		return NULL;
+	}
 
 	return line;
 }
@@ -535,8 +550,12 @@ int gpiod_line_update(struct gpiod_line *line)
 	info.offset = line->offset;
 
 	rv = ioctl(line->chip->fd, GPIO_V2_GET_LINEINFO_IOCTL, &info);
-	if (rv < 0)
+	if (rv < 0) {
+		printf("\n----libgpiod : %d : %s : %s",
+			__LINE__, __func__, __FILE__);
+		printf("\nrv = %d\n", rv);
 		return -1;
+	}
 
 	line->direction = info.flags & GPIO_V2_LINE_FLAG_OUTPUT
 						? GPIOD_LINE_DIRECTION_OUTPUT

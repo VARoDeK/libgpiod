@@ -138,8 +138,12 @@ static void list_lines(struct gpiod_chip *chip)
 
 	for (offset = 0; offset < gpiod_chip_num_lines(chip); offset++) {
 		line = gpiod_chip_get_line(chip, offset);
-		if (!line)
+		if (!line){
+			printf("\n----libgpiod : %d : %s : %s",
+				__LINE__, __func__, __FILE__);
+			printf("\nHere it ends\n");
 			die_perror("unable to retrieve the line object from chip");
+		}
 
 		name = gpiod_line_name(line);
 		consumer = gpiod_line_consumer(line);
